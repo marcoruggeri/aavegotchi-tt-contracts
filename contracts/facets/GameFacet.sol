@@ -124,6 +124,11 @@ contract GameFacet is Modifiers {
         s.grids[matchId][x][y].isActive = true;
         s.grids[matchId][x][y].tokenId = tokenId;
         s.grids[matchId][x][y].winner = msg.sender;
+        s.matches[matchId].movs_counter++;
+        
+        if(s.matches.movs_counter==9){
+            checkWinner(matchId);
+        }
     }
 
     function checkWinner(uint256 matchId) internal returns (address winner) {
