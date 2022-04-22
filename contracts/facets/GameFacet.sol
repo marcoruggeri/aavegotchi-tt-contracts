@@ -126,7 +126,11 @@ contract GameFacet is Modifiers {
         s.grids[matchId][x][y].winner = msg.sender;
     }
 
-    function checkWinner(uint256 matchId) internal returns (address winner) {
+    function checkWinner(uint256 matchId)
+        internal
+        view
+        returns (address winner)
+    {
         uint256 player1Points;
         uint256 player2Points;
         for (uint256 i; i < 3; i++) {
