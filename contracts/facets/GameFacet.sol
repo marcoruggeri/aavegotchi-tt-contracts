@@ -37,7 +37,8 @@ contract GameFacet is Modifiers {
             player2,
             false,
             player1Ids,
-            player2Ids
+            player2Ids,
+            0
         );
         s.matches[s.nextId] = newMatch;
         s.nextId++;
@@ -125,8 +126,8 @@ contract GameFacet is Modifiers {
         s.grids[matchId][x][y].tokenId = tokenId;
         s.grids[matchId][x][y].winner = msg.sender;
         s.matches[matchId].movs_counter++;
-        
-        if(s.matches.movs_counter==9){
+
+        if (s.matches[matchId].movs_counter == 9) {
             checkWinner(matchId);
         }
     }
