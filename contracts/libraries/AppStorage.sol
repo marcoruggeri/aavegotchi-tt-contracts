@@ -15,9 +15,6 @@ struct Match {
     bool player2Turn;
     uint256[5] player1Gotchis;
     uint256[5] player2Gotchis;
-    uint256 lastMovePlayer1;
-    uint256 lastMovePlayer2;
-    Tile[3][3] grid;
 }
 
 struct Register {
@@ -28,8 +25,9 @@ struct Register {
 struct AppStorage {
     address aavegotchiDiamond;
     mapping(uint256 => Match) matches;
+    mapping(uint256 => Tile[3][3]) grids;
     uint256 nextId;
-    Register[] register;
+    Register[] registered;
 }
 
 library LibAppStorage {

@@ -1,42 +1,46 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import {AppStorage, Modifiers} from "../libraries/AppStorage.sol";
+import {AppStorage, Modifiers, Match, Register, Tile} from "../libraries/AppStorage.sol";
 import "../interfaces/IAavegotchiDiamond.sol";
 
 contract GameFacet is Modifiers {
-    function register(uint256[5] tokenIds) external {
+    function register(uint256[5] calldata tokenIds) external {
         for (uint256 i; i < 5; i++) {
             require(
-                IAavegotchiDiamond(s.aavegotchiDiamond).ownerOf(_tokenIds[i]) ==
+                IAavegotchiDiamond(s.aavegotchiDiamond).ownerOf(tokenIds[i]) ==
                     msg.sender,
                 "GameFacet: not owner"
             );
         }
-        register.push(Register(msg.sender, _tokenIds));
-        if (register.length == 2) {
+        s.registered.push(Register(msg.sender, tokenIds));
+        if (s.registered.length == 2) {
             _createMatch(
-                register[0].player,
+                s.registered[0].player,
                 msg.sender,
-                register[0].tokenIds,
-                _tokenIds
+                s.registered[0].tokenIds,
+                tokenIds
             );
-            register.pop();
-            register.pop();
+            s.registered.pop();
+            s.registered.pop();
         }
     }
 
     function _createMatch(
         address player1,
         address player2,
-        uint256[5] player1Ids,
-        uint256[5] player2Ids
+        uint256[5] memory player1Ids,
+        uint256[5] memory player2Ids
     ) internal {
-        Match memory newMatch = Match(player1, player2, player1Ids, player2Ids);
-        matches[s.nextId] = newMatch;
-        nextId++;
-        block.timestamp;
-        block.timestamp;
+        Match memory newMatch = Match(
+            player1,
+            player2,
+            false,
+            player1Ids,
+            player2Ids
+        );
+        s.matches[s.nextId] = newMatch;
+        s.nextId++;
     }
 
     function playCard(
@@ -45,23 +49,20 @@ contract GameFacet is Modifiers {
         uint256 x,
         uint256 y
     ) external {
-        if (!matches[matchId].isPlayer2Turn) {
+        if (!s.matches[matchId].player2Turn) {
             require(
-                msg.sender == matches[matchId].player1,
+                msg.sender == s.matches[matchId].player1,
                 "GameFacet: not player 1"
             );
         } else {
             require(
-                msg.sender == matches[matchId].player2,
+                msg.sender == s.matches[matchId].player2,
                 "GameFacet: not player 2"
             );
         }
         require(x != 0 && x < 3, "GameFacet: wrong x");
         require(y != 0 && y < 3, "GameFacet: wrong y");
-        require(
-            !matches[matchId].grid[x][y].isActive,
-            "GameFacet: wrong coords"
-        );
+        require(!s.grids[matchId][x][y].isActive, "GameFacet: wrong coords");
         // check around
         int16[6] memory playerGotchiParams = IAavegotchiDiamond(
             s.aavegotchiDiamond
@@ -69,60 +70,60 @@ contract GameFacet is Modifiers {
         int16[6] memory oppositeGotchiParams;
         if (
             y - 1 >= 0 &&
-            matches[matchId].grid[x][y - 1].isActive &&
-            matches[matchId].grid[x][y - 1].winner != msg.sender
+            s.grids[matchId][x][y - 1].isActive &&
+            s.grids[matchId][x][y - 1].winner != msg.sender
         ) {
-            uint256 oppositeTokenId = matches[matchId].grid[x][y - 1].tokenId;
+            uint256 oppositeTokenId = s.grids[matchId][x][y - 1].tokenId;
             oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
                 .getAavegotchi(oppositeTokenId)
                 .modifiedNumericTraits;
             if (playerGotchiParams[0] > oppositeGotchiParams[2]) {
-                matches[matchId].grid[x][y - 1].winner = msg.sender;
+                s.grids[matchId][x][y - 1].winner = msg.sender;
             }
         }
         if (
             x - 1 >= 0 &&
-            matches[matchId].grid[x - 1][y].isActive &&
-            matches[matchId].grid[x - 1][y].winner != msg.sender
+            s.grids[matchId][x - 1][y].isActive &&
+            s.grids[matchId][x - 1][y].winner != msg.sender
         ) {
-            uint256 oppositeTokenId = matches[matchId].grid[x - 1][y].tokenId;
+            uint256 oppositeTokenId = s.grids[matchId][x - 1][y].tokenId;
             oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
                 .getAavegotchi(oppositeTokenId)
                 .modifiedNumericTraits;
             if (playerGotchiParams[3] > oppositeGotchiParams[1]) {
-                matches[matchId].grid[x - 1][y].winner = msg.sender;
+                s.grids[matchId][x - 1][y].winner = msg.sender;
             }
         }
         if (
             y + 1 < 3 &&
-            matches[matchId].grid[x][y + 1].isActive &&
-            matches[matchId].grid[x][y + 1].winner != msg.sender
+            s.grids[matchId][x][y + 1].isActive &&
+            s.grids[matchId][x][y + 1].winner != msg.sender
         ) {
-            uint256 oppositeTokenId = matches[matchId].grid[x][y + 1].tokenId;
+            uint256 oppositeTokenId = s.grids[matchId][x][y + 1].tokenId;
             oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
                 .getAavegotchi(oppositeTokenId)
                 .modifiedNumericTraits;
             if (playerGotchiParams[2] > oppositeGotchiParams[0]) {
-                matches[matchId].grid[x][y + 1].winner = msg.sender;
+                s.grids[matchId][x][y + 1].winner = msg.sender;
             }
         }
         if (
             x + 1 < 3 &&
-            matches[matchId].grid[x + 1][y].isActive &&
-            matches[matchId].grid[x + 1][y].winner != msg.sender
+            s.grids[matchId][x + 1][y].isActive &&
+            s.grids[matchId][x + 1][y].winner != msg.sender
         ) {
-            uint256 oppositeTokenId = matches[matchId].grid[x + 1][y].tokenId;
+            uint256 oppositeTokenId = s.grids[matchId][x + 1][y].tokenId;
             oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
                 .getAavegotchi(oppositeTokenId)
                 .modifiedNumericTraits;
             if (playerGotchiParams[1] > oppositeGotchiParams[3]) {
-                matches[matchId].grid[x + 1][y].winner = msg.sender;
+                s.grids[matchId][x + 1][y].winner = msg.sender;
             }
         }
         // ok
-        matches[matchId].grid[x][y].isActive = true;
-        matches[matchId].grid[x][y].tokenId = tokenId;
-        matches[matchId].grid[x][y].winner = msg.sender;
+        s.grids[matchId][x][y].isActive = true;
+        s.grids[matchId][x][y].tokenId = tokenId;
+        s.grids[matchId][x][y].winner = msg.sender;
     }
 
     function checkWinner(uint256 matchId) internal returns (address winner) {
@@ -130,13 +131,10 @@ contract GameFacet is Modifiers {
         uint256 player2Points;
         for (uint256 i; i < 3; i++) {
             for (uint256 j; j < 3; j++) {
-                if (
-                    s.matches[matchId].grid[i][j].winner ==
-                    s.matches[matchId].player1
-                ) player1Points++;
+                if (s.grids[matchId][i][j].winner == s.matches[matchId].player1)
+                    player1Points++;
                 else if (
-                    s.matches[matchId].grid[i][j].winner ==
-                    s.matches[matchId].player2
+                    s.grids[matchId][i][j].winner == s.matches[matchId].player2
                 ) player2Points++;
             }
         }
