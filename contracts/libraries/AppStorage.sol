@@ -16,6 +16,7 @@ struct Match {
     uint256[5] player1Gotchis;
     uint256[5] player2Gotchis;
     uint8 movsCounter;
+    address winner;
 }
 
 struct MatchPve {
