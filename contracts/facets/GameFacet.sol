@@ -215,4 +215,8 @@ contract GameFacet is Modifiers {
         s.dai = _DAI;
         s.aavePool = _aavePool;
     }
+
+    function approvePool() external onlyOwner {
+        IERC20(s.dai).approve(s.aavePool, type(uint256).max);
+    }
 }
