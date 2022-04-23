@@ -7,7 +7,8 @@ import {
   Diamond__factory,
   OwnershipFacet,
   GameFacet,
-  IERC721
+  IERC721,
+  IERC20
 } from "../typechain";
 
 const { getSelectors, FacetCutAction } = require("./libraries/diamond");
@@ -129,6 +130,26 @@ export async function deployDiamond() {
   await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 22128)
   await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 2195)
 
+
+  await network.provider.request({
+    method: "hardhat_stopImpersonatingAccount",
+    params: ["0xd9d54f0f67fde251ab41ffb36579f308b592d905"],
+  });
+
+  await network.provider.request({
+    method: "hardhat_impersonateAccount",
+    params: ["0x06959153B974D0D5fDfd87D561db6d8d4FA0bb0B"],
+  });
+
+  const signer2 = await ethers.getSigner("0x06959153B974D0D5fDfd87D561db6d8d4FA0bb0B");
+
+  const ierc20 = (await ethers.getContractAt(
+    "IERC20",
+    "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
+  )) as IERC20;
+
+  await ierc20.connect(signer2).transfer("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", ethers.utils.parseUnits("10000", "ether"));
+  await ierc20.connect(signer2).transfer("0x70997970C51812dc3A010C7d01b50e0d17dc79C8", ethers.utils.parseUnits("10000", "ether"));
 
   return diamond.address;
 }
