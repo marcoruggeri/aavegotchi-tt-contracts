@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import {AppStorage, Modifiers, Match, Register, Tile} from "../libraries/AppStorage.sol";
+import {AppStorage, Modifiers, Match, MatchPve, Register, Tile} from "../libraries/AppStorage.sol";
 import "../interfaces/IAavegotchiDiamond.sol";
 
 contract GameFacet is Modifiers {
@@ -26,6 +26,17 @@ contract GameFacet is Modifiers {
         }
     }
 
+    function registerPve(uint256[5] calldata tokenIds) external {
+        for (uint256 i; i < 5; i++) {
+            require(
+                IAavegotchiDiamond(s.aavegotchiDiamond).ownerOf(tokenIds[i]) ==
+                    msg.sender,
+                "GameFacet: not owner"
+            );
+        }
+        _createMatchPve(msg.sender, tokenIds);
+    }
+
     function _createMatch(
         address player1,
         address player2,
@@ -42,6 +53,14 @@ contract GameFacet is Modifiers {
         );
         s.matches[s.nextId] = newMatch;
         s.nextId++;
+    }
+
+    function _createMatchPve(address player, uint256[5] memory playerIds)
+        internal
+    {
+        MatchPve memory newMatch = MatchPve(player, playerIds, 0);
+        s.matchesPve[s.nextIdPve] = newMatch;
+        s.nextIdPve++;
     }
 
     function playCard(
@@ -132,6 +151,13 @@ contract GameFacet is Modifiers {
         }
     }
 
+    function playCardPve(
+        uint256 tokenId,
+        uint256 matchId,
+        uint256 x,
+        uint256 y
+    ) external {}
+
     function checkWinner(uint256 matchId)
         internal
         view
@@ -159,6 +185,10 @@ contract GameFacet is Modifiers {
         returns (Tile[3][3] memory)
     {
         return s.grids[matchId];
+    }
+
+    function getMatch(uint256 matchId) external view returns (Match memory) {
+        return s.matches[matchId];
     }
 
     function setAddresses(address _aavegotchiDiamond) external onlyOwner {

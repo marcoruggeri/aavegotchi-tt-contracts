@@ -18,6 +18,12 @@ struct Match {
     uint8 movsCounter;
 }
 
+struct MatchPve {
+    address player;
+    uint256[5] player1Gotchis;
+    uint8 movsCounter;
+}
+
 struct Register {
     address player;
     uint256[5] tokenIds;
@@ -26,8 +32,11 @@ struct Register {
 struct AppStorage {
     address aavegotchiDiamond;
     mapping(uint256 => Match) matches;
+    mapping(uint256 => MatchPve) matchesPve;
     mapping(uint256 => Tile[3][3]) grids;
+    mapping(uint256 => Tile[3][3]) gridsPve;
     uint256 nextId;
+    uint256 nextIdPve;
     Register[] registered;
 }
 
