@@ -1,11 +1,13 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { ethers } from "hardhat";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { network, ethers } from "hardhat";
 import {
   DiamondCutFacet,
   DiamondInit__factory,
   Diamond__factory,
   OwnershipFacet,
   GameFacet,
+  IERC721
 } from "../typechain";
 
 const { getSelectors, FacetCutAction } = require("./libraries/diamond");
@@ -93,6 +95,32 @@ export async function deployDiamond() {
       `Diamond owner ${diamondOwner} is not deployer address ${deployerAddress}!`
     );
   }
+
+  const gameFacet = (await ethers.getContractAt(
+    "GameFacet",
+    diamond.address
+  )) as GameFacet;
+
+  await gameFacet.setAddresses("0x86935F11C86623deC8a25696E1C19a8659CbF95d");
+
+  const ierc721 = (await ethers.getContractAt(
+    "IERC721",
+    "0x86935F11C86623deC8a25696E1C19a8659CbF95d"
+  )) as IERC721;
+
+  await network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: ["0xd9d54f0f67fde251ab41ffb36579f308b592d905"],
+    });
+
+  const signer = await ethers.getSigner("0xd9d54f0f67fde251ab41ffb36579f308b592d905")
+
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 3052)
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 21424)
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 9358)
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 12409)
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 172)
+
 
   return diamond.address;
 }
