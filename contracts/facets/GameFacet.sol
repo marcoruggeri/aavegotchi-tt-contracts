@@ -88,58 +88,61 @@ contract GameFacet is Modifiers {
             s.aavegotchiDiamond
         ).getAavegotchi(tokenId).modifiedNumericTraits;
         int16[6] memory oppositeGotchiParams;
-        if (
-            y - 1 >= 0 &&
-            s.grids[matchId][x][y - 1].isActive &&
-            s.grids[matchId][x][y - 1].winner != msg.sender
-        ) {
-            uint256 oppositeTokenId = s.grids[matchId][x][y - 1].tokenId;
-            oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
-                .getAavegotchi(oppositeTokenId)
-                .modifiedNumericTraits;
-            if (playerGotchiParams[0] > oppositeGotchiParams[2]) {
-                s.grids[matchId][x][y - 1].winner = msg.sender;
+        unchecked {
+            if (
+                y - 1 >= 0 &&
+                s.grids[matchId][x][y - 1].isActive &&
+                s.grids[matchId][x][y - 1].winner != msg.sender
+            ) {
+                uint256 oppositeTokenId = s.grids[matchId][x][y - 1].tokenId;
+                oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
+                    .getAavegotchi(oppositeTokenId)
+                    .modifiedNumericTraits;
+                if (playerGotchiParams[0] > oppositeGotchiParams[2]) {
+                    s.grids[matchId][x][y - 1].winner = msg.sender;
+                }
+            }
+            if (
+                x - 1 >= 0 &&
+                s.grids[matchId][x - 1][y].isActive &&
+                s.grids[matchId][x - 1][y].winner != msg.sender
+            ) {
+                uint256 oppositeTokenId = s.grids[matchId][x - 1][y].tokenId;
+                oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
+                    .getAavegotchi(oppositeTokenId)
+                    .modifiedNumericTraits;
+                if (playerGotchiParams[3] > oppositeGotchiParams[1]) {
+                    s.grids[matchId][x - 1][y].winner = msg.sender;
+                }
+            }
+            if (
+                y + 1 < 3 &&
+                s.grids[matchId][x][y + 1].isActive &&
+                s.grids[matchId][x][y + 1].winner != msg.sender
+            ) {
+                uint256 oppositeTokenId = s.grids[matchId][x][y + 1].tokenId;
+                oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
+                    .getAavegotchi(oppositeTokenId)
+                    .modifiedNumericTraits;
+                if (playerGotchiParams[2] > oppositeGotchiParams[0]) {
+                    s.grids[matchId][x][y + 1].winner = msg.sender;
+                }
+            }
+            if (
+                x + 1 < 3 &&
+                s.grids[matchId][x + 1][y].isActive &&
+                s.grids[matchId][x + 1][y].winner != msg.sender
+            ) {
+                uint256 oppositeTokenId = s.grids[matchId][x + 1][y].tokenId;
+                oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
+                    .getAavegotchi(oppositeTokenId)
+                    .modifiedNumericTraits;
+                if (playerGotchiParams[1] > oppositeGotchiParams[3]) {
+                    s.grids[matchId][x + 1][y].winner = msg.sender;
+                }
             }
         }
-        if (
-            x - 1 >= 0 &&
-            s.grids[matchId][x - 1][y].isActive &&
-            s.grids[matchId][x - 1][y].winner != msg.sender
-        ) {
-            uint256 oppositeTokenId = s.grids[matchId][x - 1][y].tokenId;
-            oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
-                .getAavegotchi(oppositeTokenId)
-                .modifiedNumericTraits;
-            if (playerGotchiParams[3] > oppositeGotchiParams[1]) {
-                s.grids[matchId][x - 1][y].winner = msg.sender;
-            }
-        }
-        if (
-            y + 1 < 3 &&
-            s.grids[matchId][x][y + 1].isActive &&
-            s.grids[matchId][x][y + 1].winner != msg.sender
-        ) {
-            uint256 oppositeTokenId = s.grids[matchId][x][y + 1].tokenId;
-            oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
-                .getAavegotchi(oppositeTokenId)
-                .modifiedNumericTraits;
-            if (playerGotchiParams[2] > oppositeGotchiParams[0]) {
-                s.grids[matchId][x][y + 1].winner = msg.sender;
-            }
-        }
-        if (
-            x + 1 < 3 &&
-            s.grids[matchId][x + 1][y].isActive &&
-            s.grids[matchId][x + 1][y].winner != msg.sender
-        ) {
-            uint256 oppositeTokenId = s.grids[matchId][x + 1][y].tokenId;
-            oppositeGotchiParams = IAavegotchiDiamond(s.aavegotchiDiamond)
-                .getAavegotchi(oppositeTokenId)
-                .modifiedNumericTraits;
-            if (playerGotchiParams[1] > oppositeGotchiParams[3]) {
-                s.grids[matchId][x + 1][y].winner = msg.sender;
-            }
-        }
+
         // ok
         s.grids[matchId][x][y].isActive = true;
         s.grids[matchId][x][y].tokenId = tokenId;
