@@ -148,6 +148,8 @@ contract GameFacet is Modifiers {
         s.grids[matchId][x][y].winner = msg.sender;
         s.matches[matchId].movsCounter++;
 
+        s.matches[matchId].player2Turn = !s.matches[matchId].player2Turn;
+
         if (s.matches[matchId].movsCounter == 9) {
             checkWinner(matchId);
         }
