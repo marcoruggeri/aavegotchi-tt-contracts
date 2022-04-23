@@ -31,6 +31,8 @@ struct Register {
 
 struct AppStorage {
     address aavegotchiDiamond;
+    address dai;
+    address aavePool;
     mapping(uint256 => Match) matches;
     mapping(uint256 => MatchPve) matchesPve;
     mapping(uint256 => Tile[3][3]) grids;

@@ -3,9 +3,14 @@ pragma solidity 0.8.13;
 
 import {AppStorage, Modifiers, Match, MatchPve, Register, Tile} from "../libraries/AppStorage.sol";
 import "../interfaces/IAavegotchiDiamond.sol";
+import "../interfaces/IPool.sol";
+import "../interfaces/IERC20.sol";
+
 
 contract GameFacet is Modifiers {
     function register(uint256[5] calldata tokenIds) external {
+        IERC20(s.dai).transferFrom(msg.sender,address(this), 10 ether);
+        IPool(s.aavePool).supply(s.dai, 10 ether, address(this), 0);
         for (uint256 i; i < 5; i++) {
             require(
                 IAavegotchiDiamond(s.aavegotchiDiamond).ownerOf(tokenIds[i]) ==
@@ -160,7 +165,6 @@ contract GameFacet is Modifiers {
 
     function checkWinner(uint256 matchId)
         internal
-        view
         returns (address winner)
     {
         uint256 player1Points;
@@ -174,9 +178,15 @@ contract GameFacet is Modifiers {
                 ) player2Points++;
             }
         }
-        if (player1Points > player2Points && player1Points > 5)
+        if (player1Points > player2Points && player1Points > 5){
+            IPool(s.aavePool).withdraw(s.dai, 20 ether, s.matches[matchId].player1);
             return s.matches[matchId].player1;
-        else return s.matches[matchId].player2;
+        }
+
+        else {
+            IPool(s.aavePool).withdraw(s.dai, 20 ether, s.matches[matchId].player2);
+            return s.matches[matchId].player2;
+            }
     }
 
     function getGrid(uint256 matchId)
@@ -191,7 +201,9 @@ contract GameFacet is Modifiers {
         return s.matches[matchId];
     }
 
-    function setAddresses(address _aavegotchiDiamond) external onlyOwner {
+    function setAddresses(address _aavegotchiDiamond, address _DAI, address _aavePool) external onlyOwner {
         s.aavegotchiDiamond = _aavegotchiDiamond;
+        s.dai = _DAI;
+        s.aavePool = _aavePool;
     }
 }
