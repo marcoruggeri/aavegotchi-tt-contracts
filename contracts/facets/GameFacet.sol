@@ -80,8 +80,8 @@ contract GameFacet is Modifiers {
                 "GameFacet: not player 2"
             );
         }
-        require(x != 0 && x < 3, "GameFacet: wrong x");
-        require(y != 0 && y < 3, "GameFacet: wrong y");
+        require(x < 3, "GameFacet: wrong x");
+        require(y < 3, "GameFacet: wrong y");
         require(!s.grids[matchId][x][y].isActive, "GameFacet: wrong coords");
         // check around
         int16[6] memory playerGotchiParams = IAavegotchiDiamond(
