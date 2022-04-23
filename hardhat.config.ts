@@ -26,10 +26,15 @@ const config: HardhatUserConfig = {
   solidity: "0.8.13",
   networks: {
     localhost: {
-      url: "http://127.0.0.1:8545/", 
+      url: "http://127.0.0.1:8545/",
       chainId: 31337,
-    }
-  }
+    },
+    polygon: {
+      url: process.env.POLYGON_URL || "",
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+  },
 };
 
 export default config;

@@ -8,8 +8,8 @@ import "../interfaces/IERC20.sol";
 
 contract GameFacet is Modifiers {
     function register(uint256[] calldata tokenIds) external {
-        IERC20(s.dai).transferFrom(msg.sender, address(this), 10 ether);
-        IPool(s.aavePool).supply(s.dai, 10 ether, address(this), 0);
+        IERC20(s.dai).transferFrom(msg.sender, address(this), 1);
+        IPool(s.aavePool).supply(s.dai, 1 ether, address(this), 0);
         /*for (uint256 i; i < 5; i++) {
              require(
                 IAavegotchiDiamond(s.aavegotchiDiamond).ownerOf(tokenIds[i]) ==
@@ -66,8 +66,8 @@ contract GameFacet is Modifiers {
                     isInside = true;
                     popArray(s.matches[matchId].player1Gotchis, i);
                 }
-                require(isInside, "GameFacet: wrong card");
             }
+            require(isInside, "GameFacet: wrong card");
         } else {
             require(
                 msg.sender == s.matches[matchId].player2,
@@ -79,8 +79,8 @@ contract GameFacet is Modifiers {
                     isInside = true;
                     popArray(s.matches[matchId].player2Gotchis, i);
                 }
-                require(isInside, "GameFacet: wrong card");
             }
+            require(isInside, "GameFacet: wrong card");
         }
         require(x < 3, "GameFacet: wrong x");
         require(y < 3, "GameFacet: wrong y");
@@ -169,18 +169,10 @@ contract GameFacet is Modifiers {
             }
         }
         if (player1Points > player2Points && player1Points > 5) {
-            IPool(s.aavePool).withdraw(
-                s.dai,
-                20 ether,
-                s.matches[matchId].player1
-            );
+            IPool(s.aavePool).withdraw(s.dai, 2, s.matches[matchId].player1);
             s.matches[matchId].winner = s.matches[matchId].player1;
         } else {
-            IPool(s.aavePool).withdraw(
-                s.dai,
-                20 ether,
-                s.matches[matchId].player2
-            );
+            IPool(s.aavePool).withdraw(s.dai, 2, s.matches[matchId].player2);
             s.matches[matchId].winner = s.matches[matchId].player2;
         }
     }
