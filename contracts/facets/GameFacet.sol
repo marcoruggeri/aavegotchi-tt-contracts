@@ -9,7 +9,7 @@ import "../interfaces/IERC20.sol";
 contract GameFacet is Modifiers {
     function register(uint256[] calldata tokenIds) external {
         IERC20(s.dai).transferFrom(msg.sender, address(this), 1);
-        IPool(s.aavePool).supply(s.dai, 1 ether, address(this), 0);
+        IPool(s.aavePool).supply(s.dai, 1, address(this), 0);
         /*for (uint256 i; i < 5; i++) {
              require(
                 IAavegotchiDiamond(s.aavegotchiDiamond).ownerOf(tokenIds[i]) ==
