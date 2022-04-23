@@ -153,6 +153,14 @@ contract GameFacet is Modifiers {
         else return s.matches[matchId].player2;
     }
 
+    function getGrid(uint256 matchId)
+        external
+        view
+        returns (Tile[3][3] memory)
+    {
+        return s.grids[matchId];
+    }
+
     function setAddresses(address _aavegotchiDiamond) external onlyOwner {
         s.aavegotchiDiamond = _aavegotchiDiamond;
     }
