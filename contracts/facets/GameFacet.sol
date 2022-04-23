@@ -125,9 +125,9 @@ contract GameFacet is Modifiers {
         s.grids[matchId][x][y].isActive = true;
         s.grids[matchId][x][y].tokenId = tokenId;
         s.grids[matchId][x][y].winner = msg.sender;
-        s.matches[matchId].movs_counter++;
+        s.matches[matchId].movsCounter++;
 
-        if (s.matches[matchId].movs_counter == 9) {
+        if (s.matches[matchId].movsCounter == 9) {
             checkWinner(matchId);
         }
     }
@@ -152,7 +152,8 @@ contract GameFacet is Modifiers {
             return s.matches[matchId].player1;
         else return s.matches[matchId].player2;
     }
-}
 
-// player1 5 6
-// player2 4 5
+    function setAddresses(address _aavegotchiDiamond) external onlyOwner {
+        s.aavegotchiDiamond = _aavegotchiDiamond;
+    }
+}

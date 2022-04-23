@@ -15,7 +15,7 @@ struct Match {
     bool player2Turn;
     uint256[5] player1Gotchis;
     uint256[5] player2Gotchis;
-    uint8 movs_counter;
+    uint8 movsCounter;
 }
 
 struct Register {
