@@ -101,12 +101,14 @@ export async function deployDiamond() {
     diamond.address
   )) as GameFacet;
 
-  await gameFacet.setAddresses("0x86935F11C86623deC8a25696E1C19a8659CbF95d");
+  await gameFacet.setAddresses("0x86935F11C86623deC8a25696E1C19a8659CbF95d", "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063", "0x794a61358D6845594F94dc1DB02A252b5b4814aD");
 
   const ierc721 = (await ethers.getContractAt(
     "IERC721",
     "0x86935F11C86623deC8a25696E1C19a8659CbF95d"
   )) as IERC721;
+
+   await gameFacet.approvePool();
 
   await network.provider.request({
       method: "hardhat_impersonateAccount",
