@@ -83,6 +83,10 @@ contract GameFacet is Modifiers {
         require(x < 3, "GameFacet: wrong x");
         require(y < 3, "GameFacet: wrong y");
         require(!s.grids[matchId][x][y].isActive, "GameFacet: wrong coords");
+        s.grids[matchId][x][y].isActive = true;
+        s.grids[matchId][x][y].tokenId = tokenId;
+        s.grids[matchId][x][y].winner = msg.sender;
+        s.matches[matchId].movsCounter++;
         // check around
         int16[6] memory playerGotchiParams = IAavegotchiDiamond(
             s.aavegotchiDiamond
@@ -141,12 +145,6 @@ contract GameFacet is Modifiers {
                 s.grids[matchId][x + 1][y].winner = msg.sender;
             }
         }
-
-        // ok
-        s.grids[matchId][x][y].isActive = true;
-        s.grids[matchId][x][y].tokenId = tokenId;
-        s.grids[matchId][x][y].winner = msg.sender;
-        s.matches[matchId].movsCounter++;
 
         s.matches[matchId].player2Turn = !s.matches[matchId].player2Turn;
 
