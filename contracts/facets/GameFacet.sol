@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import {AppStorage, Modifiers, Match, MatchPve, Register, Tile} from "../libraries/AppStorage.sol";
+import {AppStorage, Modifiers, Match, Register, Tile} from "../libraries/AppStorage.sol";
 import "../interfaces/IAavegotchiDiamond.sol";
 import "../interfaces/IPool.sol";
 import "../interfaces/IERC20.sol";
 
 contract GameFacet is Modifiers {
-    function register(uint256[5] calldata tokenIds) external {
+    function register(uint256[] calldata tokenIds) external {
         IERC20(s.dai).transferFrom(msg.sender, address(this), 10 ether);
         IPool(s.aavePool).supply(s.dai, 10 ether, address(this), 0);
         for (uint256 i; i < 5; i++) {
@@ -30,22 +30,11 @@ contract GameFacet is Modifiers {
         }
     }
 
-    function registerPve(uint256[5] calldata tokenIds) external {
-        for (uint256 i; i < 5; i++) {
-            require(
-                IAavegotchiDiamond(s.aavegotchiDiamond).ownerOf(tokenIds[i]) ==
-                    msg.sender,
-                "GameFacet: not owner"
-            );
-        }
-        _createMatchPve(msg.sender, tokenIds);
-    }
-
     function _createMatch(
         address player1,
         address player2,
-        uint256[5] memory player1Ids,
-        uint256[5] memory player2Ids
+        uint256[] memory player1Ids,
+        uint256[] memory player2Ids
     ) internal {
         Match memory newMatch = Match(
             player1,
@@ -60,14 +49,6 @@ contract GameFacet is Modifiers {
         s.nextId++;
     }
 
-    function _createMatchPve(address player, uint256[5] memory playerIds)
-        internal
-    {
-        MatchPve memory newMatch = MatchPve(player, playerIds, 0);
-        s.matchesPve[s.nextIdPve] = newMatch;
-        s.nextIdPve++;
-    }
-
     function playCard(
         uint256 tokenId,
         uint256 matchId,
@@ -79,15 +60,32 @@ contract GameFacet is Modifiers {
                 msg.sender == s.matches[matchId].player1,
                 "GameFacet: not player 1"
             );
+            bool isInside;
+            for (uint256 i; i < 5; i++) {
+                if (tokenId == s.matches[matchId].player1Gotchis[i]) {
+                    isInside = true;
+                    popArray(s.matches[matchId].player1Gotchis, i);
+                }
+                require(isInside, "GameFacet: wrong card");
+            }
         } else {
             require(
                 msg.sender == s.matches[matchId].player2,
                 "GameFacet: not player 2"
             );
+            bool isInside;
+            for (uint256 i; i < 5; i++) {
+                if (tokenId == s.matches[matchId].player2Gotchis[i]) {
+                    isInside = true;
+                    popArray(s.matches[matchId].player2Gotchis, i);
+                }
+                require(isInside, "GameFacet: wrong card");
+            }
         }
         require(x < 3, "GameFacet: wrong x");
         require(y < 3, "GameFacet: wrong y");
         require(!s.grids[matchId][x][y].isActive, "GameFacet: wrong coords");
+
         s.grids[matchId][x][y].isActive = true;
         s.grids[matchId][x][y].tokenId = tokenId;
         s.grids[matchId][x][y].winner = msg.sender;
@@ -158,13 +156,6 @@ contract GameFacet is Modifiers {
         }
     }
 
-    function playCardPve(
-        uint256 tokenId,
-        uint256 matchId,
-        uint256 x,
-        uint256 y
-    ) external {}
-
     function checkWinner(uint256 matchId) internal {
         uint256 player1Points;
         uint256 player2Points;
@@ -192,6 +183,11 @@ contract GameFacet is Modifiers {
             );
             s.matches[matchId].winner = s.matches[matchId].player2;
         }
+    }
+
+    function popArray(uint256[] storage _array, uint256 _index) internal {
+        _array[_index] = _array[_array.length - 1];
+        _array.pop();
     }
 
     function getGrid(uint256 matchId)

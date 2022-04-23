@@ -13,21 +13,15 @@ struct Match {
     address player1;
     address player2;
     bool player2Turn;
-    uint256[5] player1Gotchis;
-    uint256[5] player2Gotchis;
+    uint256[] player1Gotchis;
+    uint256[] player2Gotchis;
     uint8 movsCounter;
     address winner;
 }
 
-struct MatchPve {
-    address player;
-    uint256[5] player1Gotchis;
-    uint8 movsCounter;
-}
-
 struct Register {
     address player;
-    uint256[5] tokenIds;
+    uint256[] tokenIds;
 }
 
 struct AppStorage {
@@ -35,11 +29,8 @@ struct AppStorage {
     address dai;
     address aavePool;
     mapping(uint256 => Match) matches;
-    mapping(uint256 => MatchPve) matchesPve;
     mapping(uint256 => Tile[3][3]) grids;
-    mapping(uint256 => Tile[3][3]) gridsPve;
     uint256 nextId;
-    uint256 nextIdPve;
     Register[] registered;
 }
 
