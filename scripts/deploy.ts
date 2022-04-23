@@ -121,6 +121,12 @@ export async function deployDiamond() {
   await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 12409)
   await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 172)
 
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 22133)
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1454)
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 21508)
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 22128)
+  await ierc721.connect(signer)["safeTransferFrom(address,address,uint256)"](signer.address, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 2195)
+
 
   return diamond.address;
 }
