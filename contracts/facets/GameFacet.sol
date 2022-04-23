@@ -60,27 +60,27 @@ contract GameFacet is Modifiers {
                 msg.sender == s.matches[matchId].player1,
                 "GameFacet: not player 1"
             );
-            bool isInside;
-            for (uint256 i; i < 5; i++) {
-                if (tokenId == s.matches[matchId].player1Gotchis[i]) {
-                    isInside = true;
-                    popArray(s.matches[matchId].player1Gotchis, i);
-                }
-            }
-            require(isInside, "GameFacet: wrong card");
+            // bool isInside;
+            // for (uint256 i; i < 5; i++) {
+            //     if (tokenId == s.matches[matchId].player1Gotchis[i]) {
+            //         isInside = true;
+            //         popArray(s.matches[matchId].player1Gotchis, i);
+            //     }
+            // }
+            // require(isInside, "GameFacet: wrong card");
         } else {
             require(
                 msg.sender == s.matches[matchId].player2,
                 "GameFacet: not player 2"
             );
-            bool isInside;
-            for (uint256 i; i < 5; i++) {
-                if (tokenId == s.matches[matchId].player2Gotchis[i]) {
-                    isInside = true;
-                    popArray(s.matches[matchId].player2Gotchis, i);
-                }
-            }
-            require(isInside, "GameFacet: wrong card");
+            // bool isInside;
+            // for (uint256 i; i < 5; i++) {
+            //     if (tokenId == s.matches[matchId].player2Gotchis[i]) {
+            //         isInside = true;
+            //         popArray(s.matches[matchId].player2Gotchis, i);
+            //     }
+            // }
+            // require(isInside, "GameFacet: wrong card");
         }
         require(x < 3, "GameFacet: wrong x");
         require(y < 3, "GameFacet: wrong y");
