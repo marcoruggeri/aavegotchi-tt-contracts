@@ -10,13 +10,13 @@ contract GameFacet is Modifiers {
     function register(uint256[] calldata tokenIds) external {
         IERC20(s.dai).transferFrom(msg.sender, address(this), 10 ether);
         IPool(s.aavePool).supply(s.dai, 10 ether, address(this), 0);
-        for (uint256 i; i < 5; i++) {
-            require(
+        /*for (uint256 i; i < 5; i++) {
+             require(
                 IAavegotchiDiamond(s.aavegotchiDiamond).ownerOf(tokenIds[i]) ==
                     msg.sender,
                 "GameFacet: not owner"
-            );
-        }
+            ); 
+        }*/
         s.registered.push(Register(msg.sender, tokenIds));
         if (s.registered.length == 2) {
             _createMatch(
